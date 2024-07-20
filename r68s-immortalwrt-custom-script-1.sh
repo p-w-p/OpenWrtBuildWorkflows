@@ -20,7 +20,7 @@
 #echo 'src-git-full luci https://git.openwrt.org/project/luci.git;openwrt-22.03' >> feeds.conf.default
 #echo 'src-git-full routing https://git.openwrt.org/feed/routing.git;openwrt-22.03' >> feeds.conf.default
 #echo 'src-git-full telephony https://git.openwrt.org/feed/telephony.git;openwrt-22.03' >> feeds.conf.default
-echo 'src-git kenzo https://github.com/kenzok8/small-package.git' >> feeds.conf.default
+#echo 'src-git kenzo https://github.com/kenzok8/small-package.git' >> feeds.conf.default
 #echo 'src-git kenzo https://github.com/kenzok8/openwrt-packages.git' >> feeds.conf.default
 #echo 'src-git small https://github.com/kenzok8/small.git' >> feeds.conf.default
 # # Replace a feed source with what you want:
