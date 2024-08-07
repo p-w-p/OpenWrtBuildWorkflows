@@ -13,7 +13,7 @@
 #-------------------------------------------------------------------------------------------------------
 
 # Workflow name which is showed in GitHub Actions.
-name: Firmware_Build_Test
+name: Build ImmortalWrt for R68S
 
 on:
   workflow_dispatch:
@@ -27,16 +27,16 @@ on:
         required: false
         default: "false"
 # Uncomment the following to run regularly. Note that the cron expression here does not contain seconds.
-#  schedule:
-#    - cron: 0 16 * * 5
+  schedule:
+    - cron: 0 16 * * 5
 
 env:
   # REPO means the OpenWrt repo you want to build from in this workflow. 
   # You can modify the REPO_NAME to any name you want, but remember not to let it have the same name in 
   # other workflows.
-  REPO_NAME: Firmware_Build_Test
-  REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  REPO_BRANCH: master
+  REPO_NAME: ImmortalWrt
+  REPO_URL: https://github.com/p-w-p/immortalwrt.git
+  REPO_BRANCH: openwrt-23.05
   BUILD_DEPENDS:  "ack antlr3 asciidoc autoconf automake autopoint \
                   binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler ecj \
                   fakeroot fastjar flex gawk gettext genisoimage git gnutls-dev gperf haveged help2man \
