@@ -35,8 +35,8 @@ env:
   # You can modify the REPO_NAME to any name you want, but remember not to let it have the same name in 
   # other workflows.
   REPO_NAME: Firmware_Build_Test
-  REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  REPO_BRANCH: openwrt-23.05
+  REPO_URL: https://github.com/openwrt/openwrt.git
+  REPO_BRANCH: master
   BUILD_DEPENDS:  "ack antlr3 asciidoc autoconf automake autopoint \
                   binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler ecj \
                   fakeroot fastjar flex gawk gettext genisoimage git gnutls-dev gperf haveged help2man \
