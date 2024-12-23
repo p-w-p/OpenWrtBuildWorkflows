@@ -122,7 +122,6 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo rm -rf /etc/apt/sources.list.d/*
           sudo -E apt -qq update
           sudo -E apt -qq install $BUILD_DEPENDS
           sudo -E apt -qq autoremove --purge
