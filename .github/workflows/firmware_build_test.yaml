@@ -1,19 +1,4 @@
-#
-# Copyright (c) 2022-2023 Curious <https://www.curious.host>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-# 
-# https://github.com/Curious-r/OpenWrtBuildWorkflows
-# Description: Automatically check OpenWrt source code update and build it. No additional keys are 
-# required.
-#
-# Some features come from https://github.com/P3TERX/Actions-OpenWrt, visit the repository to get its 
-# copyright information.
-#-------------------------------------------------------------------------------------------------------
-
-# Workflow name which is showed in GitHub Actions.
-name: Firmware_Build_Test
+name: Build ImmortalWrt for R68S
 
 on:
   workflow_dispatch:
@@ -21,22 +6,18 @@ on:
       force-build:
         description: "Build new firmware anyway"
         required: false
-        default: "true"
+        default: "false"
       ssh:
         description: "SSH connection to Actions"
         required: false
         default: "false"
-# Uncomment the following to run regularly. Note that the cron expression here does not contain seconds.
 #  schedule:
 #    - cron: 0 16 * * 5
 
 env:
-  # REPO means the OpenWrt repo you want to build from in this workflow. 
-  # You can modify the REPO_NAME to any name you want, but remember not to let it have the same name in 
-  # other workflows.
-  REPO_NAME: Firmware_Build_Test
-  REPO_URL: https://github.com/openwrt/openwrt.git
-  REPO_BRANCH: master
+  REPO_NAME: ImmortalWrt
+  REPO_URL: https://github.com/immortalwrt/immortalwrt.git
+  REPO_BRANCH: openwrt-24.10
   BUILD_DEPENDS:  "ack antlr3 asciidoc autoconf automake autopoint bison binutils \
                    build-essential bzip2 ccache clang-18 cmake cpio curl device-tree-compiler ecj \
                    fakeroot fastjar flex gawk genisoimage gettext git golang-1.23-go gnutls-dev gperf \
@@ -47,25 +28,14 @@ env:
                    python3-docutils python3-pip python3-ply python3-pyelftools qemu-utils quilt re2c rsync \
                    scons sharutils squashfs-tools subversion swig texinfo uglifyjs unzip vim wget xmlto \
                    xxd zlib1g-dev zstd"
-  # CONFIG_FILE is the name of your own config files for compiling, you should upload these files into the root 
-  # directory of your workflow repo.
   CONFIG_FILE: r68s-immortalwrt.config
-  # CUSTOM_SCRIPT_1 is the name of extra bash script you want to execute before feeds update&install.
-  # CUSTOM_SCRIPT_2 is the name of extra bash script you want to execute after feeds update&install.
-  # You can modify the initial settings of your firmware through these two scripts. If this is what you need,
-  # please upload your scripts to the root directory of your workflow repo.
   CUSTOM_SCRIPT_1: r68s-immortalwrt-custom-script-1.sh
   CUSTOM_SCRIPT_2: r68s-immortalwrt-custom-script-2.sh
-  # STORE_PRODUCTS determine whether to upload all compilation products to workflow artifacts.
-  # Not only firmwires, all compiled packages will be here, including compiled but not solidified into firmware.
   STORE_PRODUCTS: false
-  # STORE_FIRMWARE determine whether to upload firmwares to workflow artifacts.
   STORE_FIRMWARE: true
-  # The following are options of where the firmware needs to be transfered. 
   COWTRANSFER_FIRMWARE: false
   WETRANSFER_FIRMWARE: false
   RELEASE_FIRMWARE: true
-  # Change the following to your time zone.
   TIME_ZONE: Asia/Shanghai
 
 jobs:
@@ -84,7 +54,7 @@ jobs:
 
       - name: Compare Commit Hash
         id: cache-hash
-        uses: actions/cache@main
+        uses: actions/cache@v3
         with:
           path: .${{ env.REPO_NAME }}-${{ env.REPO_BRANCH }}-commit-hash
           key: HEAD-${{ steps.get-hash.outputs.commit-hash }}
@@ -105,7 +75,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@v3
 
       - name: Free disk space
         uses: jlumbroso/free-disk-space@main
@@ -122,10 +92,10 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo -E apt-get -qq update
-          sudo -E apt-get -qq install $BUILD_DEPENDS
-          sudo -E apt-get -qq autoremove --purge
-          sudo -E apt-get -qq clean
+          sudo -E apt -qq update
+          sudo -E apt -qq install $BUILD_DEPENDS
+          sudo -E apt -qq autoremove --purge
+          sudo -E apt -qq clean
           sudo timedatectl set-timezone $TIME_ZONE
           sudo mkdir -p /workdir/
           sudo chown $USER:$GROUPS /workdir/
@@ -246,7 +216,7 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
 
       - name: Upload firmware to release
-        uses: softprops/action-gh-release@master
+        uses: softprops/action-gh-release@v1
         if: steps.tag.outputs.status == 'success' && !cancelled()
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
@@ -268,7 +238,7 @@ jobs:
           keep_minimum_runs: 1
 
       - name: Remove old Releases
-        uses: dev-drprasad/delete-older-releases@master
+        uses: dev-drprasad/delete-older-releases@v1
         if: env.RELEASE_FIRMWARE == 'true' && !cancelled()
         with:
           keep_latest: 3
