@@ -1,4 +1,4 @@
-name: Build ImmortalWrt for R68S
+name: Firmware_Build_Test
 
 on:
   workflow_dispatch:
