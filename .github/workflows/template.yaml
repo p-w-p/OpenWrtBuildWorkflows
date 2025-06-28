@@ -122,10 +122,10 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo -E apt-get -qq update
-          sudo -E apt-get -qq install $BUILD_DEPENDS
-          sudo -E apt-get -qq autoremove --purge
-          sudo -E apt-get -qq clean
+          sudo -E apt -qq update
+          sudo -E apt -qq install $BUILD_DEPENDS
+          sudo -E apt -qq autoremove --purge
+          sudo -E apt -qq clean
           sudo timedatectl set-timezone $TIME_ZONE
           sudo mkdir -p /workdir/
           sudo chown $USER:$GROUPS /workdir/
@@ -160,12 +160,11 @@ jobs:
           cd openwrt/
           $GITHUB_WORKSPACE/$CUSTOM_SCRIPT_2
 
-      - name: SSH connection to Actions
-        uses: P3TERX/ssh2actions@main
+      - name: Start SSH via tmate
+        uses: mxschmitt/action-tmate@master
         if: github.event.inputs.ssh == 'true' || contains(github.event.action, 'ssh')
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        with:
+          limit-access-to-actor: false
 
       - name: Download packages
         id: download-packages
