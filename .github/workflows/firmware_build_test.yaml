@@ -15,6 +15,9 @@ on:
 #    - cron: 0 16 * * 5
 
 env:
+  # REPO means the OpenWrt repo you want to build from in this workflow. 
+  # You can modify the REPO_NAME to any name you want, but remember not to let it have the same name in 
+  # other workflows.
   REPO_NAME: ImmortalWrt
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
   REPO_BRANCH: openwrt-24.10
@@ -28,14 +31,25 @@ env:
                    python3-docutils python3-pip python3-ply python3-pyelftools qemu-utils quilt re2c rsync \
                    scons sharutils squashfs-tools subversion swig texinfo uglifyjs unzip vim wget xmlto \
                    xxd zlib1g-dev zstd"
+  # CONFIG_FILE is the name of your own config files for compiling, you should upload these files into the root 
+  # directory of your workflow repo.
   CONFIG_FILE: r68s-immortalwrt.config
+  # CUSTOM_SCRIPT_1 is the name of extra bash script you want to execute before feeds update&install.
+  # CUSTOM_SCRIPT_2 is the name of extra bash script you want to execute after feeds update&install.
+  # You can modify the initial settings of your firmware through these two scripts. If this is what you need,
+  # please upload your scripts to the root directory of your workflow repo.
   CUSTOM_SCRIPT_1: r68s-immortalwrt-custom-script-1.sh
   CUSTOM_SCRIPT_2: r68s-immortalwrt-custom-script-2.sh
+  # STORE_PRODUCTS determine whether to upload all compilation products to workflow artifacts.
+  # Not only firmwires, all compiled packages will be here, including compiled but not solidified into firmware.
   STORE_PRODUCTS: false
+  # STORE_FIRMWARE determine whether to upload firmwares to workflow artifacts.
   STORE_FIRMWARE: true
+  # The following are options of where the firmware needs to be transfered. 
   COWTRANSFER_FIRMWARE: false
   WETRANSFER_FIRMWARE: false
   RELEASE_FIRMWARE: true
+  # Change the following to your time zone.
   TIME_ZONE: Asia/Shanghai
 
 jobs:
@@ -54,7 +68,7 @@ jobs:
 
       - name: Compare Commit Hash
         id: cache-hash
-        uses: actions/cache@v3
+        uses: actions/cache@main
         with:
           path: .${{ env.REPO_NAME }}-${{ env.REPO_BRANCH }}-commit-hash
           key: HEAD-${{ steps.get-hash.outputs.commit-hash }}
@@ -75,7 +89,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
 
       - name: Free disk space
         uses: jlumbroso/free-disk-space@main
@@ -130,12 +144,11 @@ jobs:
           cd openwrt/
           $GITHUB_WORKSPACE/$CUSTOM_SCRIPT_2
 
-      - name: SSH connection to Actions
-        uses: P3TERX/ssh2actions@main
+      - name: Start SSH via tmate
+        uses: mxschmitt/action-tmate@v3
         if: github.event.inputs.ssh == 'true' || contains(github.event.action, 'ssh')
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        with:
+          limit-access-to-actor: false
 
       - name: Download packages
         id: download-packages
@@ -216,7 +229,7 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
 
       - name: Upload firmware to release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@master
         if: steps.tag.outputs.status == 'success' && !cancelled()
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
@@ -238,7 +251,7 @@ jobs:
           keep_minimum_runs: 1
 
       - name: Remove old Releases
-        uses: dev-drprasad/delete-older-releases@v1
+        uses: dev-drprasad/delete-older-releases@master
         if: env.RELEASE_FIRMWARE == 'true' && !cancelled()
         with:
           keep_latest: 3
