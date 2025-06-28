@@ -161,7 +161,7 @@ jobs:
           $GITHUB_WORKSPACE/$CUSTOM_SCRIPT_2
 
       - name: Start SSH via tmate
-        uses: mxschmitt/action-tmate@v3
+        uses: mxschmitt/action-tmate@master
         if: github.event.inputs.ssh == 'true' || contains(github.event.action, 'ssh')
         with:
           limit-access-to-actor: false
