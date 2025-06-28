@@ -160,12 +160,11 @@ jobs:
           cd openwrt/
           $GITHUB_WORKSPACE/$CUSTOM_SCRIPT_2
 
-      - name: SSH connection to Actions
-        uses: P3TERX/ssh2actions@main
+      - name: Start SSH via tmate
+        uses: mxschmitt/action-tmate@v3
         if: github.event.inputs.ssh == 'true' || contains(github.event.action, 'ssh')
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        with:
+          limit-access-to-actor: true
 
       - name: Download packages
         id: download-packages
