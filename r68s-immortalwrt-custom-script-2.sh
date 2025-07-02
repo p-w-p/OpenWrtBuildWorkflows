@@ -21,4 +21,4 @@
 sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_generate
 
 # Rockchip rk3568 voltage offset
-wget -P target/linux/rockchip/patches-5.15 https://raw.githubusercontent.com/p-w-p/OpenWrtBuildWorkflows/main/patches/999-rockchip-rk3568-voltage-offset.patch
+wget -P target/linux/rockchip/patches-6.6 https://raw.githubusercontent.com/p-w-p/OpenWrtBuildWorkflows/main/patches/999-rockchip-rk3568-voltage-offset.patch
